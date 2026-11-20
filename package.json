@@ -1,0 +1,7 @@
+{
+  "name": "emlee-world",
+  "private": true,
+  "workspaces": ["client", "server"],
+  "scripts": {"dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"", "build": "npm run build -w client", "start:server": "npm run start -w server"},
+  "devDependencies": {"concurrently": "^9.1.2"}
+}
