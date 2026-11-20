@@ -1,0 +1,7 @@
+{
+  "name": "emlee-world-server",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {"dev": "node --watch src/index.js", "start": "node src/index.js"},
+  "dependencies": {"@colyseus/core": "^0.16.18", "@colyseus/ws-transport": "^0.16.5"}
+}
