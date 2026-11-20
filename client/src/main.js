@@ -238,9 +238,7 @@ const status = document.querySelector('#status');
 const list = document.querySelector('#playerList');
 
 // Replace with your Render WebSocket URL after deployment.
-const serverUrl =
-  import.meta.env.VITE_GAME_SERVER || 'ws://localhost:2567';
-
+const serverUrl='wss://emlee-world-server.onrender.com';
 try {
   const client = new Client(serverUrl);
 
