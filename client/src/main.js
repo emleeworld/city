@@ -11,36 +11,54 @@ app.innerHTML = `
     <div class="brand">emLee <span style="color:#8fa8ff">WORLD</span></div>
     <div class="pill">CITY TEST BUILD · 0.1</div>
   </div>
+
   <div class="status" id="status">CONNECTING TO WORLD…</div>
+
   <div class="players">
     <b>PLAYERS ONLINE</b>
     <div id="playerList"><span>Connecting…</span></div>
   </div>
+
   <div class="cross"></div>
+
   <div class="help">
     WASD / Arrow keys · Move<br>
     Mouse drag · Look around<br>
     Space · Jump<br>
     <span style="color:#9db8ff">Mobile: use the action buttons</span>
   </div>
+
   <div class="mobile">
     <button id="left">◀</button>
     <button id="jump">↑</button>
     <button id="right">▶</button>
   </div>
+
   <div class="name">YOUR CITY. YOUR WORLD.</div>
   <div class="credit">CREATED BY <strong>LEE</strong></div>
 </div>`;
 
+
+// =====================================
+// SCENE
+// =====================================
+
 const scene = new THREE.Scene();
+
 scene.background = new THREE.Color(0x9bb7cf);
 scene.fog = new THREE.Fog(0x9bb7cf, 75, 260);
 
 const camera = new THREE.PerspectiveCamera(
-  65, innerWidth / innerHeight, 0.1, 600
+  65,
+  innerWidth / innerHeight,
+  0.1,
+  600
 );
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({
+  antialias: true
+});
+
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
 renderer.shadowMap.enabled = true;
@@ -50,81 +68,130 @@ renderer.toneMappingExposure = 1.15;
 
 app.prepend(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xd9eaff, 0x45505d, 2));
+
+// =====================================
+// LIGHTING
+// =====================================
+
+scene.add(
+  new THREE.HemisphereLight(
+    0xd9eaff,
+    0x45505d,
+    2
+  )
+);
 
 const sun = new THREE.DirectionalLight(0xffe1bd, 3);
+
 sun.position.set(-45, 80, 30);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
+
 scene.add(sun);
 
+
+// =====================================
+// MATERIALS AND GROUND
+// =====================================
+
 const mat = (c, r = 0.8) =>
-  new THREE.MeshStandardMaterial({ color: c, roughness: r });
+  new THREE.MeshStandardMaterial({
+    color: c,
+    roughness: r
+  });
 
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(500, 500),
   mat(0x59665f)
 );
+
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
+
 scene.add(ground);
 
-// City roads and road markings
+
+// =====================================
+// CITY ROADS
+// =====================================
 
 const roadMat = mat(0x252b32);
 const lineMat = mat(0xd7d0ad);
 
 for (let i = -4; i <= 4; i++) {
+
   const roadX = new THREE.Mesh(
     new THREE.PlaneGeometry(13, 420),
     roadMat
   );
+
   roadX.rotation.x = -Math.PI / 2;
   roadX.position.set(i * 48, 0.025, 0);
+
   scene.add(roadX);
 
   const roadZ = new THREE.Mesh(
     new THREE.PlaneGeometry(420, 13),
     roadMat
   );
+
   roadZ.rotation.x = -Math.PI / 2;
   roadZ.position.set(0, 0.026, i * 48);
+
   scene.add(roadZ);
 
   for (let k = -8; k <= 8; k++) {
+
     const dash = new THREE.Mesh(
       new THREE.BoxGeometry(0.18, 0.035, 3.2),
       lineMat
     );
+
     dash.position.set(i * 48, 0.06, k * 12);
+
     scene.add(dash);
 
     const dash2 = new THREE.Mesh(
       new THREE.BoxGeometry(3.2, 0.035, 0.18),
       lineMat
     );
+
     dash2.position.set(k * 12, 0.061, i * 48);
+
     scene.add(dash2);
   }
 }
 
-// Buildings
+
+// =====================================
+// CITY BUILDINGS
+// =====================================
 
 const buildingMats = [
-  0x697783, 0x8b9297, 0x4e5b69,
-  0xb1a99a, 0x596b75, 0x777b83
+  0x697783,
+  0x8b9297,
+  0x4e5b69,
+  0xb1a99a,
+  0x596b75,
+  0x777b83
 ].map(c => mat(c, 0.65));
 
 for (let x = -4; x <= 4; x++) {
+
   for (let z = -4; z <= 4; z++) {
-    if (Math.abs(x) === 4 && Math.abs(z) === 4) continue;
+
+    if (Math.abs(x) === 4 && Math.abs(z) === 4) {
+      continue;
+    }
 
     const cx = x * 48;
     const cz = z * 48;
 
     for (let n = 0; n < 5; n++) {
+
       const bx = cx + (Math.random() - 0.5) * 28;
       const bz = cz + (Math.random() - 0.5) * 28;
+
       const w = 7 + Math.random() * 9;
       const d = 7 + Math.random() * 9;
       const h = 9 + Math.random() * 43;
@@ -139,22 +206,32 @@ for (let x = -4; x <= 4; x++) {
       b.position.set(bx, h / 2, bz);
       b.castShadow = true;
       b.receiveShadow = true;
+
       scene.add(b);
 
       const roof = new THREE.Mesh(
-        new THREE.BoxGeometry(w * 0.55, 0.5, d * 0.55),
+        new THREE.BoxGeometry(
+          w * 0.55,
+          0.5,
+          d * 0.55
+        ),
         mat(0x343d48)
       );
 
       roof.position.set(bx, h + 0.25, bz);
+
       scene.add(roof);
     }
   }
 }
 
-// Player creation
+
+// =====================================
+// PLAYER CREATION
+// =====================================
 
 function makePlayer(color = 0x426fe8) {
+
   const g = new THREE.Group();
 
   const body = new THREE.Mesh(
@@ -164,6 +241,7 @@ function makePlayer(color = 0x426fe8) {
 
   body.position.y = 1.15;
   body.castShadow = true;
+
   g.add(body);
 
   const head = new THREE.Mesh(
@@ -173,16 +251,21 @@ function makePlayer(color = 0x426fe8) {
 
   head.position.y = 2.05;
   head.castShadow = true;
+
   g.add(head);
 
   return g;
 }
 
 const me = makePlayer(0x416fe8);
+
 scene.add(me);
 me.position.set(0, 0, 0);
 
-// Keyboard controls
+
+// =====================================
+// KEYBOARD CONTROLS
+// =====================================
 
 const keys = {};
 
@@ -194,25 +277,36 @@ addEventListener('keyup', e => {
   keys[e.key.toLowerCase()] = false;
 });
 
-// Camera controls
+
+// =====================================
+// CAMERA CONTROLS
+// =====================================
 
 let yaw = 0;
 let pitch = 0.22;
+
 let drag = false;
 let lastX = 0;
 let lastY = 0;
+
 let vy = 0;
 let onGround = true;
 
-renderer.domElement.addEventListener('pointerdown', e => {
-  drag = true;
-  lastX = e.clientX;
-  lastY = e.clientY;
+renderer.domElement.addEventListener(
+  'pointerdown',
+  e => {
+    drag = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+  }
+);
+
+addEventListener('pointerup', () => {
+  drag = false;
 });
 
-addEventListener('pointerup', () => drag = false);
-
 addEventListener('pointermove', e => {
+
   if (!drag) return;
 
   yaw -= (e.clientX - lastX) * 0.004;
@@ -227,7 +321,10 @@ addEventListener('pointermove', e => {
   lastY = e.clientY;
 });
 
-// Multiplayer connection
+
+// =====================================
+// MULTIPLAYER CONNECTION
+// =====================================
 
 const remote = new Map();
 
@@ -237,54 +334,100 @@ let sendTimer = 0;
 const status = document.querySelector('#status');
 const list = document.querySelector('#playerList');
 
-// Replace with your Render WebSocket URL after deployment.
-const serverUrl='wss://emlee-world-server.onrender.com';
-try {
-  const client = new Client(serverUrl);
+const serverUrl =
+  'wss://emlee-world-server.onrender.com';
 
-  room = await client.joinOrCreate('city');
+async function connectToWorld() {
 
-  status.textContent = '● CONNECTED · MULTIPLAYER LIVE';
+  try {
 
-  room.onMessage('snapshot', data => {
-    for (const [id, p] of Object.entries(data)) {
-      if (id === room.sessionId) continue;
+    status.textContent = 'CONNECTING TO MULTIPLAYER...';
 
-      if (!remote.has(id)) {
-        const m = makePlayer(0xe2a84b);
-        scene.add(m);
-        remote.set(id, { mesh: m });
+    const client = new Client(serverUrl);
+
+    room = await client.joinOrCreate('city');
+
+    status.textContent =
+      '● CONNECTED · MULTIPLAYER LIVE';
+
+    room.onMessage('snapshot', data => {
+
+      for (const [id, p] of Object.entries(data)) {
+
+        if (id === room.sessionId) continue;
+
+        if (!remote.has(id)) {
+
+          const m = makePlayer(0xe2a84b);
+
+          scene.add(m);
+
+          remote.set(id, {
+            mesh: m
+          });
+        }
+
+        const r = remote.get(id);
+
+        r.target = new THREE.Vector3(
+          p.x,
+          p.y,
+          p.z
+        );
+
+        r.yaw = p.yaw || 0;
       }
+    });
 
-      const r = remote.get(id);
-      r.target = new THREE.Vector3(p.x, p.y, p.z);
-      r.yaw = p.yaw || 0;
-    }
-  });
+    room.onLeave(() => {
 
-  room.onLeave(() => {
-    status.textContent = '○ DISCONNECTED · RELOAD TO REJOIN';
-  });
+      status.textContent =
+        '○ DISCONNECTED · RELOAD TO REJOIN';
 
-} catch (e) {
-  status.textContent =
-    '● LOCAL PREVIEW · START SERVER FOR MULTIPLAYER';
+      room = null;
+    });
 
-  console.warn('Multiplayer server not available:', e);
+  } catch (e) {
+
+    room = null;
+
+    status.textContent =
+      '● LOCAL PREVIEW · SERVER CONNECTION FAILED';
+
+    console.warn(
+      'Multiplayer connection failed:',
+      e
+    );
+  }
 }
 
-// Mobile controls
+connectToWorld();
+
+
+// =====================================
+// MOBILE CONTROLS
+// =====================================
 
 function bindHold(id, key) {
+
   const el = document.getElementById(id);
 
   el.addEventListener('pointerdown', e => {
+
     e.preventDefault();
+
     keys[key] = true;
   });
 
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => {
-    el.addEventListener(ev, () => keys[key] = false);
+  [
+    'pointerup',
+    'pointerleave',
+    'pointercancel'
+  ].forEach(ev => {
+
+    el.addEventListener(ev, () => {
+      keys[key] = false;
+    });
   });
 }
 
@@ -294,18 +437,24 @@ bindHold('right', 'd');
 document.getElementById('jump').addEventListener(
   'pointerdown',
   () => {
+
     if (onGround) {
+
       vy = 8;
       onGround = false;
     }
   }
 );
 
-// Game loop
+
+// =====================================
+// GAME LOOP
+// =====================================
 
 const clock = new THREE.Clock();
 
 function animate() {
+
   requestAnimationFrame(animate);
 
   const dt = Math.min(clock.getDelta(), 0.04);
@@ -321,38 +470,53 @@ function animate() {
   const speed = keys.shift ? 13 : 7;
 
   const dir = new THREE.Vector3(
-    Math.sin(yaw), 0, Math.cos(yaw)
+    Math.sin(yaw),
+    0,
+    Math.cos(yaw)
   );
 
   const right = new THREE.Vector3(
-    Math.cos(yaw), 0, -Math.sin(yaw)
+    Math.cos(yaw),
+    0,
+    -Math.sin(yaw)
   );
 
   me.position.addScaledVector(
-    dir, -forward * speed * dt
+    dir,
+    -forward * speed * dt
   );
 
   me.position.addScaledVector(
-    right, side * speed * dt
+    right,
+    side * speed * dt
   );
 
   me.position.x = THREE.MathUtils.clamp(
-    me.position.x, -205, 205
+    me.position.x,
+    -205,
+    205
   );
 
   me.position.z = THREE.MathUtils.clamp(
-    me.position.z, -205, 205
+    me.position.z,
+    -205,
+    205
   );
 
+  // Jump
+
   if (keys[' '] && onGround) {
+
     vy = 8;
     onGround = false;
   }
 
   vy -= 22 * dt;
+
   me.position.y += vy * dt;
 
   if (me.position.y < 0) {
+
     me.position.y = 0;
     vy = 0;
     onGround = true;
@@ -361,6 +525,8 @@ function animate() {
   if (forward || side) {
     me.rotation.y = yaw;
   }
+
+  // Camera follow
 
   const target = new THREE.Vector3(
     me.position.x,
@@ -381,10 +547,12 @@ function animate() {
 
   camera.lookAt(target);
 
-  // Update remote players
+  // Remote players
 
   for (const r of remote.values()) {
+
     if (r.target) {
+
       r.mesh.position.lerp(
         r.target,
         Math.min(1, dt * 12)
@@ -394,11 +562,12 @@ function animate() {
     }
   }
 
-  // Send player position to multiplayer server
+  // Send position to server
 
   sendTimer += dt;
 
   if (room && sendTimer > 0.07) {
+
     sendTimer = 0;
 
     room.send('move', {
@@ -408,6 +577,8 @@ function animate() {
       yaw
     });
   }
+
+  // Player list
 
   list.innerHTML =
     `<span>You · ${room ? 'online' : 'local'}</span>` +
@@ -420,10 +591,19 @@ function animate() {
 
 animate();
 
-// Responsive screen
+
+// =====================================
+// RESPONSIVE SCREEN
+// =====================================
 
 addEventListener('resize', () => {
+
   camera.aspect = innerWidth / innerHeight;
+
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+
+  renderer.setSize(
+    innerWidth,
+    innerHeight
+  );
 });
