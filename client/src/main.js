@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Client } from '@colyseus/sdk';
+import { Client } from 'colyseus.js';
 import './style.css';
 
 const app = document.querySelector('#app');
