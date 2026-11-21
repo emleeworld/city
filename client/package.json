@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {"dev": "vite --host 0.0.0.0", "build": "vite build", "preview": "vite preview --host 0.0.0.0"},
-  "dependencies": {"@colyseus/sdk": "^0.16.22", "three": "^0.170.0"},
+  "dependencies": {"colyseus.js": "^0.16.22", "three": "^0.170.0"},
   "devDependencies": {"vite": "^6.0.5"}
 }
